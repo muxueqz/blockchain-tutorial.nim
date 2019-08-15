@@ -38,6 +38,10 @@ proc isBlockValid(newBlock, oldBlock: Block): bool =
     return false
   return true
 
+proc replaceChain(newBlocks: seq[Block]) =
+  if len(newBlocks) > len(Blockchain):
+    Blockchain = newBlocks
+
 var
   genesisBlock: Block
 genesisBlock.Index = 0
@@ -55,5 +59,7 @@ routes:
       bpm = @"BPM"
       newBlock = generateBlock(Blockchain[len(Blockchain)-1], bpm.parseInt)
     if isBlockValid(newBlock, Blockchain[len(Blockchain)-1]):
-        Blockchain.add newBlock
+      var newBlocks = deepCopy(Blockchain)
+      newBlocks.add newBlock
+      replaceChain(newBlocks)
     resp Http201, $newBlock
